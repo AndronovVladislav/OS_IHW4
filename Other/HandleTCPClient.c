@@ -1,6 +1,6 @@
 #include "utils.h"
 
-void HandleTCPClient1(int clntSocket, int clientsAmount) {
+void HandleUDPClient1(int clntSocket, int clientsAmount) {
     int sellerNumber;
     int shmid;
     struct sockaddr_in echoClntAddr;
@@ -20,22 +20,18 @@ void HandleTCPClient1(int clntSocket, int clientsAmount) {
 
     for (int i = 0; i < clientsAmount; ++i) {
         if (clients[i].currentSeller <= 2 && clients[i].sellersToVisit[clients[i].currentSeller] == sellerNumber) {
-            // sleep(rand() % 3 + 1);
+            sleep(rand() % 3 + 1);
             while (clients[i].currentSeller <= 2 && clients[i].sellersToVisit[++clients[i].currentSeller] == 0);
         }
     }
-
-    // PrintClients(clientsAmount);
 
     if (sendto(clntSocket, &sellerNumber, sizeof(sellerNumber), 0, (struct sockaddr *) &echoClntAddr, sizeof(echoClntAddr)) != sizeof(sellerNumber)) {
         DieWithError("send() failed");
     }
     printf("I sent %d seller number\n", sellerNumber);
-
-    // close(clntSocket);
 }
 
-void HandleTCPClient2(int sock, int clientsAmount, int multicastSock, struct sockaddr_in multicastAddr) {
+void HandleUDPClient2(int sock, int clientsAmount, struct sockaddr_in observerAddr) {
     int sellerNumber;
     int shmid;
     struct sockaddr_in echoClntAddr;
@@ -52,25 +48,25 @@ void HandleTCPClient2(int sock, int clientsAmount, int multicastSock, struct soc
         DieWithError("recvfrom() failed");
     }
 
-    if (sellerNumber != 4) {
-        printf("I received %d seller number\n", sellerNumber);
+    printf("I received %d seller number\n", sellerNumber);
 
-        for (int i = 0; i < clientsAmount; ++i) {
-            if (clients[i].currentSeller <= 2 && clients[i].sellersToVisit[clients[i].currentSeller] == sellerNumber) {
-                sleep(rand() % 3 + 1);
-                while (clients[i].currentSeller <= 2 && clients[i].sellersToVisit[++clients[i].currentSeller] == 0);
-            }
+    for (int i = 0; i < clientsAmount; ++i) {
+        if (clients[i].currentSeller <= 2 && clients[i].sellersToVisit[clients[i].currentSeller] == sellerNumber) {
+            sleep(rand() % 3 + 1);
+            while (clients[i].currentSeller <= 2 && clients[i].sellersToVisit[++clients[i].currentSeller] == 0);
         }
     }
 
-    if (sendto(multicastSock, &sellerNumber, sizeof(sellerNumber), 0, (struct sockaddr *) &multicastAddr, sizeof(multicastAddr)) != sizeof(sellerNumber)) {
+    if (sendto(sock, &sellerNumber, sizeof(sellerNumber), 0, (struct sockaddr *) &echoClntAddr, sizeof(echoClntAddr)) != sizeof(sellerNumber)) {
         DieWithError("send() failed");
     }
-    printf("I sent %d seller number to several hosts\n", sellerNumber);
+
+    if (sendto(sock, &sellerNumber, sizeof(sellerNumber), 0, (struct sockaddr *) &observerAddr, sizeof(observerAddr)) != sizeof(sellerNumber)) {
+        DieWithError("send() failed");
+    }
+    printf("I sent %d seller number to client and observer\n", sellerNumber);
 
     if (!UnservedClients(clientsAmount)) {
         exit(0);
     }
-
-    // close(clntSocket);
 }

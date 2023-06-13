@@ -1,5 +1,5 @@
-#include <stdio.h>  /* for perror() */
-#include <stdlib.h> /* for exit() */
+#include <stdio.h>
+#include <stdlib.h>
 
 void DieWithError(char *errorMessage) {
     perror(errorMessage);

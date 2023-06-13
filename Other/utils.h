@@ -1,8 +1,8 @@
 #ifndef IHW3_UTILS_H
 #define IHW3_UTILS_H
 
-#define SELLERS_AMOUNT 3
-#define QUEUE_REGION "queue"
+#define SELLERS_AMOUNT     3
+#define QUEUE_REGION       "queue"
 
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
@@ -19,25 +19,20 @@
 #include <sys/shm.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
-#include <sys/socket.h> /* for socket(), bind(), and connect() */
-#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 typedef struct client {
     int currentSeller;
     int sellersToVisit[3];
 } client;
 
-#define MAXPENDING 5    /* Maximum outstanding connection requests */
-
-void DieWithError(char *errorMessage);  /* Error handling function */
-void HandleTCPClient1(int clntSocket, int clientsAmount);   /* TCP client handling function */
-void HandleTCPClient2(int sock, int clientsAmount, int multicastSock, struct sockaddr_in multicastAddr);   /* TCP client handling function */
-int CreateTCPServerSocket(unsigned short port); /* Create TCP server socket */
-int AcceptTCPConnection(int servSock);  /* Accept TCP connection request */
+void DieWithError(char *errorMessage);
+void HandleUDPClient1(int clntSocket, int clientsAmount);
+void HandleUDPClient2(int sock, int clientsAmount, struct sockaddr_in observerAddr);
+int CreateUDPServerSocket(unsigned short port);
 void PrintClients(int clientsAmount);
 void CreateClients(int clientsAmount);
 int UnservedClients(int clientsAmount);
-int HandleUDPObserver();
-// void SIGIOHandler(int signalType);
 
 #endif //IHW3_UTILS_H
