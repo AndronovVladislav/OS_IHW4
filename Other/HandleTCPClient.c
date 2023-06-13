@@ -35,7 +35,7 @@ void HandleTCPClient1(int clntSocket, int clientsAmount) {
     // close(clntSocket);
 }
 
-void HandleTCPClient2(int sock, int clientsAmount, struct sockaddr_in* multicastAddr) {
+void HandleTCPClient2(int sock, int clientsAmount, int multicastSock, struct sockaddr_in multicastAddr) {
     int sellerNumber;
     int shmid;
     struct sockaddr_in echoClntAddr;
@@ -52,10 +52,6 @@ void HandleTCPClient2(int sock, int clientsAmount, struct sockaddr_in* multicast
         DieWithError("recvfrom() failed");
     }
 
-    if (sellerNumber == 5) {
-        exit(0);
-    }
-
     if (sellerNumber != 4) {
         printf("I received %d seller number\n", sellerNumber);
 
@@ -67,7 +63,7 @@ void HandleTCPClient2(int sock, int clientsAmount, struct sockaddr_in* multicast
         }
     }
 
-    if (sendto(sock, &sellerNumber, sizeof(sellerNumber), 0, (struct sockaddr *) &multicastAddr, sizeof(multicastAddr)) != sizeof(sellerNumber)) {
+    if (sendto(multicastSock, &sellerNumber, sizeof(sellerNumber), 0, (struct sockaddr *) &multicastAddr, sizeof(multicastAddr)) != sizeof(sellerNumber)) {
         DieWithError("send() failed");
     }
     printf("I sent %d seller number to several hosts\n", sellerNumber);

@@ -31,7 +31,7 @@ typedef struct client {
 
 void DieWithError(char *errorMessage);  /* Error handling function */
 void HandleTCPClient1(int clntSocket, int clientsAmount);   /* TCP client handling function */
-void HandleTCPClient2(int sock, int clientsAmount, struct sockaddr_in* multicastAddr);   /* TCP client handling function */
+void HandleTCPClient2(int sock, int clientsAmount, int multicastSock, struct sockaddr_in multicastAddr);   /* TCP client handling function */
 int CreateTCPServerSocket(unsigned short port); /* Create TCP server socket */
 int AcceptTCPConnection(int servSock);  /* Accept TCP connection request */
 void PrintClients(int clientsAmount);
